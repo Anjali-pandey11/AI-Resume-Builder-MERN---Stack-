@@ -6,6 +6,9 @@ import PersonalInfoForm from '../components/PersonalInfoForm';
 import ResumePreview from '../components/ResumePreview';
 import TemplateSelector from '../components/TemplateSelector';
 import ColorPicker from '../components/ColorPicker';
+import ProfessionalSummaryForm from '../components/ProfessionalSummaryForm';
+import ExperienceForm from '../components/ExperienceForm';
+import EducationForm from '../components/EducationForm';
 
 const ResumeBuilder = () => {
 
@@ -28,7 +31,7 @@ const ResumeBuilder = () => {
 
    const loadExistingResume = async () => {
      const resume = dummyResumeData.find(resume => resume._id === resumeId.resumeId);
-     console.log(resume) // output undefined kyu aa rha hai
+    //  console.log(resume) // output undefined kyu aa rha hai
 
      if(resume){
       setResumeData(resume);
@@ -108,6 +111,19 @@ const ResumeBuilder = () => {
                     <PersonalInfoForm data={resumeData.personal_info} onChange = {(data)=>setResumeData(prev => ({...prev, personal_info:data}))} removeBackground={removeBackground} setRemoveBackground={setRemoveBackground}/>
                   </div>
                 )}
+
+                { activeSection.id === 'summary' && (
+                  <ProfessionalSummaryForm data={resumeData.professional_summary} onChange = {(data) => setResumeData(prev=>({...prev,professional_summary:data}))} setResumeData={setResumeData}/>
+                )}
+
+                { activeSection.id === 'experience' && (
+                  <ExperienceForm data={resumeData.experience} onChange = {(data) => setResumeData(prev=>({...prev,experience:data}))}/>
+                )}
+
+                { activeSection.id === 'education' && (
+                  <EducationForm data={resumeData.education} onChange = {(data) => setResumeData(prev=>({...prev,education:data}))}/>
+                )}
+
               </div>
 
             </div>
