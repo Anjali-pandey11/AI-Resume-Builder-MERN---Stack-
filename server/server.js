@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import { connect } from "mongoose";
 import connectDb from "./configs/db.js";
 
 const app = express();
@@ -14,7 +13,11 @@ await connectDb()
 app.use(express.json());
 app.use(cors())
 
-app.get('/',(req,res)=>res.send("server is live"))
+app.get('/',(req,res)=>{
+  console.log("Hello",req.body)
+  res.send("server is live");
+  
+})
 
 
 
