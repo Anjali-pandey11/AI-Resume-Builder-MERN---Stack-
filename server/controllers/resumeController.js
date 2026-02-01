@@ -1,4 +1,6 @@
+import imagekit from "../configs/imageKit.js";
 import Resume from "../models/Resume.js";
+import fs from 'fs'
 
 // controller for creating a new resume
 // POST: /api/resumes/create
@@ -19,8 +21,6 @@ export const createResume = async (req, res) => {
      return res.status(400).json({message:error.message});
   }
 }
-
-
 
 // controller for deleting a resume
 // DELETE: /api/resumes/delete
@@ -64,7 +64,6 @@ export const getResumeById = async (req,res) => {
 }
  }
 
-
  // get resume by id public
  // GET: /api/resumes/public
 
@@ -95,6 +94,22 @@ export const updateResume = async (req, res) => {
 
     // create copy of resumeData in database
     let resumeDataCopy = JSON.parse(resumeData);
+
+    if(image){
+
+      const imageBufferData = fs.createReadStream(image.path)
+
+      const response = await imagekit.files.upload({
+      file: imageBufferData,
+      fileName: 'resume.png',
+      folder:'user-resumes',
+      transformation:{
+        pre:'w-300,h-300, fo-face,z-0.75' + (removeBackground ? ',e-bgremove': '')
+      }
+   });
+
+   resumeDataCopy.personal_info.image = response.url;
+}
 
    const resume =  await Resume.findByIdAndUpdate({userId, _id: resumeId}, 
       resumeDataCopy,
