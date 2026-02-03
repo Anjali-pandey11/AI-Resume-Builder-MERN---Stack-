@@ -7,14 +7,14 @@ import resumeRouter from "./routes/resumeRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // database connection
 
 await connectDb()
 
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 app.get('/',(req,res)=>{
   console.log("Hello",req.body)
