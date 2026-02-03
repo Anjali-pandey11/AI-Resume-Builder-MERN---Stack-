@@ -15,3 +15,7 @@ TEMP location (RAM / Disk)
 Cloudinary / ImageKit
   ↓
 DB me sirf URL save
+
+
+
+# Persistent Login / Auto Authentication

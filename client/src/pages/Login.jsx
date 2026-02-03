@@ -1,6 +1,12 @@
 import React from "react";
 import {Lock, Mail, User2Icon} from 'lucide-react'
+import api from "../configs/api";
+import { useDispatch } from "react-redux";
+import { login } from "../app/features/authSlice";
+import toast from "react-hot-toast";
 const Login = () => {
+
+  const dispatch = useDispatch();
 
   const query = new URLSearchParams(window.location.search)
   const urlState = query.get('state')
@@ -15,6 +21,17 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+           
+    try {
+      const {data} = await api.post(`/api/users/${state}`, formData)
+   
+      dispatch(login(data));
+      localStorage.setItem('token',data.token);
+      toast.success();
+    } catch (error) {
+      console.log(error)
+      toast(error?.response?.data?.message || error.message);
+    }
   };
 
   const handleChange = (e) => {
@@ -34,7 +51,7 @@ const Login = () => {
       <p className="text-gray-500 text-sm mt-2">Please sign in to continue</p>
       {state !== "login" && (
         <div className="flex items-center mt-6 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-         <User2Icon size={16} color='6B7280'/>
+         <User2Icon size={16} color='#6B7280'/>
           <input
             type="text"
             name="name"
