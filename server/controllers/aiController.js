@@ -74,29 +74,30 @@ export const enhanceJobDescription = async (req, res) => {
 // PORT: /api/ai/upload-resume
 
 export const uploadResume = async (req, res) => {
-     try {
+
+  try {
+
+    console.log("USER ID 👉", req.userId);
+    const { resumeText, title } = req.body;
+    const userId = req.userId;
+
+    if (!resumeText) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const systemPrompt =
+      "You are an expert AI Agent to extract structured data from resumes.";
+
+    const userPrompt = `Extract data from this resume ${resumeText}  Provide data in the following JSON format with no additional text before or after: 
      
-       const {resumeText, title} = req.body;
-       const userId = req.userId;
-
-       if(!resumeText){
-        return res.status(400).json({message:'Missing required fields'})
-       }
-
-      const systemPrompt = "You are an expert AI Agent to extract data from resume."
-
-      const userPrompt = `extract data from this Resume: ${resumeText} Provide data in the following JSON format with no additional text before or after: 
-       
-  professional_summary:{type:String, default:''},
-  skills:[{type:String}],
-  personal_info: {
-      image:{type:String, default:''},
-      full_name:{type:String, default:''},
-      email:{type:String, default:''},
-      phone:{type:String, default:''},
-      location:{type:String, default:''},
-      linkedin:{type:String, default:''},
-      website:{type:String, default:''},      
+     personal_info: {
+    image:{type:String, default:''},
+    full_name:{type:String, default:''},
+    email:{type:String, default:''},
+    phone:{type:String, default:''},
+    location:{type:String, default:''},
+    linkedin:{type:String, default:''},
+    website:{type:String, default:''},
   },
   experience:[
     {
@@ -123,35 +124,37 @@ export const uploadResume = async (req, res) => {
       graduation_date:{type:String},
       gpa:{type:String},
     }
-  ],
-}
-    
-      `;
+  ]
 
-     const response = await ai.chat.completions.create({
-         model: process.env.OPENAI_MODEL,
-         messages: [
-        { role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-    ],
+    `;
 
-      response_format:{type: 'json_object'}
-      })
+    const response = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [
+        { role: "system", 
+          content: systemPrompt },
+        { role: "user", 
+          content: userPrompt }
+      ],
+      response_format: { type: "json_object" }
+    });
 
-      const extractedData = response.choices[0].message.content;
+    const extractedData = response.choices[0].message.content;
 
-      const parsedData = JSON.parse({extractedData})
+     const parsedData = JSON.parse(extractedData);
+      
+     console.error("JSON PARSE ERROR 👉", extractedData);
+     
+    const newResume = await Resume.create({
+      userId,
+      title,
+      ...parsedData,
+    });
 
-      const newResume = await Resume.create({userId, title ,...parsedData})
+    res.json({ resumeId: newResume._id });
 
-       res.json({resumeId:newResume._id});
-
-     } catch (error) {
-       return res.status(400).json({message: error.message})
-     }
-}
+  } catch (error) {
+    console.log("BACKEND ERROR aicontroller 👉", error);
+    res.status(500).json({ message: error.message });
+  }
+};

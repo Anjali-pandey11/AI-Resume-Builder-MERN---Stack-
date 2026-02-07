@@ -7,7 +7,7 @@ const generateToken = (userId) => {
   const token = jwt.sign({userId},process.env.JWT_SECRET, {expiresIn: '7d'});
   return token;
 }
-
+    
 // controller for user registration
 // POST: /api/users/register
 export const registerUser = async (req,res) => {
@@ -59,7 +59,7 @@ export const loginUser = async(req,res) => {
      const user = await User.findOne({email});
      
      if(!user){
-       res.status(400).json({message:'iInvalid email or password'})
+      return res.status(400).json({message:'Invalid email or password'})
      }
 
      // check user password
@@ -123,4 +123,3 @@ export const getuserResumes = async (req,res) => {
      return res.status(400).json({message:error.message});
   }
 }
-

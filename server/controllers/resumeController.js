@@ -88,12 +88,14 @@ export const getPublicResumeById = async (req,res) => {
 export const updateResume = async (req, res) => {
   try {
     
-    const {userId} = req.userId;
+    const userId = req.userId;
+    
     const { resumeId, resumeData, removeBackground} = req.body;
     const image = req.file;
 
+    console.log(resumeId);
     // create copy of resumeData in database
-    let resumeDataCopy = JSON.parse(resumeData);
+    let resumeDataCopy = JSON.parse(JSON.stringify(resumeData));
 
     if(image){
 
@@ -111,8 +113,8 @@ export const updateResume = async (req, res) => {
    resumeDataCopy.personal_info.image = response.url;
 }
 
-   const resume =  await Resume.findByIdAndUpdate({userId, _id: resumeId}, 
-      resumeDataCopy,
+   const resume =  await Resume.findOneAndUpdate({userId, _id: resumeId}, 
+      resumeDataCopy, 
       {new:true})
   
       return res.status(200).json({message:'saved successfully', resume})
