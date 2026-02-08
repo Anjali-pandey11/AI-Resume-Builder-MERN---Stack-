@@ -24,6 +24,8 @@ const App = () => {
         const { data } = await api.get('/api/users/data', {headers:{Authorization:token}})
         
 
+        
+
         if(data.user){
           dispatch(login({token,user:data.user}))
         }
