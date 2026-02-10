@@ -11,5 +11,4 @@ const storage = multer.diskStorage({});
  multer ka instance multer know where is file and how to store it. Now Upload is a middleware
 */
 const upload = multer({storage});
-
 export default upload;

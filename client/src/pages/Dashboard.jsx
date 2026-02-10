@@ -32,7 +32,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const loadAllResumes = async () => {
-    setAllResumes(dummyResumeData);
+    try {
+      const {data} = await api.get('/api/users/resumes',{headers:{Authorization:token}})
+
+      setAllResumes(data.resumes);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
   };
 
   const createResume = async (event) => {
@@ -72,16 +78,18 @@ const Dashboard = () => {
         },
       );
       console.log("object");
+      
       setTitle("");
       setResume(null);
       setShowUploadResume(false);
+       navigate(`/app/builder/${data.resumeId}`);
+       
+      toast.success(data.message);
+      
 
-      console.log("UPLOAD RESPONSE 👉", data);
-
-      navigate(`/app/builder/${data.resumeId}`);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
-      console.log(error?.response?.data);
+      
     }
     setIsLoading(false);
   };
@@ -305,7 +313,7 @@ const Dashboard = () => {
                   onChange={(e) => setResume(e.target.files[0])}
                 />
               </div>
-              <button className="w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors">
+              <button className="w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors   flex items-center justify-center gap-2">
                 {isLoading && (
                   <LoaderCircleIcon className="animate-spin size-4 text-white" />
                 )}

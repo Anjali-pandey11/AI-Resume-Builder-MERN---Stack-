@@ -92,7 +92,8 @@ export const getUserById = async (req, res) => {
     const userId = req.userId;
 
     //check if user exists
-    const user = await User.findOne({userId})
+    const user = await User.findOne({_id:userId})
+
     if(!user){
       return res.status(404).json({message: 'User not found'});
     }

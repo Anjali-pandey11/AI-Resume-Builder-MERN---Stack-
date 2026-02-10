@@ -23,9 +23,6 @@ const App = () => {
        if(token){
         const { data } = await api.get('/api/users/data', {headers:{Authorization:token}})
         
-
-        
-
         if(data.user){
           dispatch(login({token,user:data.user}))
         }
@@ -39,7 +36,7 @@ const App = () => {
        
     } catch (error) {
       dispatch(setLoading(false));
-      console.log("App.jsx",error.message)
+      console.log("App.jsx ===> ",error?.response?.data?.message)
     }
   }
 
@@ -68,3 +65,5 @@ const App = () => {
 }
 
 export default App
+
+

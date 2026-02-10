@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
-import { dummyResumeData } from '../assets/assets';
 import { ArrowLeft, Briefcase, ChevronLeft, ChevronRight, Download, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, UserIcon } from 'lucide-react';
 import PersonalInfoForm from '../components/PersonalInfoForm';
 import ResumePreview from '../components/ResumePreview';
@@ -11,10 +10,14 @@ import ExperienceForm from '../components/ExperienceForm';
 import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
+import api from '../configs/api';
+import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 
 const ResumeBuilder = () => {
 
-  const resumeId = useParams();
+  const {resumeId} = useParams();
+  const { token } = useSelector((state) => state.auth);
 
 
    const [resumeData, setResumeData] = useState({
@@ -32,21 +35,26 @@ const ResumeBuilder = () => {
    });
 
    const loadExistingResume = async () => {
-     const resume = dummyResumeData.find(resume => resume._id === resumeId.resumeId);
-    //  console.log(resume) // output undefined kyu aa rha hai
-
-     if(resume){
-      setResumeData(resume);
-      document.title = resume.title;
+    try {
+      const { data } = await api.get('/api/resumes/get/'+resumeId , {
+        headers: {
+          Authorization: token
+        }
+      });
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong")
+    }
      }
-   }
-
+   
    const [activeSectionIndex, setActiveSectionIndex] = useState(0)
 
    const [removeBackground, setRemoveBackground] = useState(false);
 
-   
-
+  
    const sections = [
     {id:'personal', name:"personal Info", icon:UserIcon},
     {id:'summary', name:"Summary", icon:FileText},
@@ -80,6 +88,43 @@ const ResumeBuilder = () => {
     const downloadResume = () => {
       window.print();
     }
+
+const saveResume = async () => {
+  try {
+    let updatedResumeData = structuredClone(resumeData);
+
+    //remove image from updateResumeData
+    if (typeof resumeData.personal_info.image === 'object') {
+      delete updatedResumeData.personal_info.image;
+    }
+
+    const formData = new FormData();
+    formData.append("resumeId", resumeId);
+    formData.append('resumeData', JSON.stringify(updatedResumeData));
+
+    removeBackground && formData.append("removeBackground", "yes");
+
+    // user upload the new image
+    if (resumeData.personal_info.image instanceof File) {
+  formData.append("image", resumeData.personal_info.image);
+}
+
+    const { data } = await api.put('/api/resumes/update', formData, {
+      headers: { Authorization: token ,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    setResumeData(data.resume);
+
+
+    toast.success(data.message);
+  } catch (error) {
+    console.error("Error saving resumes: ", error);
+  }
+}
+
+
   return (
     <div>
        
@@ -152,7 +197,8 @@ const ResumeBuilder = () => {
                   <SkillsForm data={resumeData.skills} onChange = {(data) => setResumeData(prev=>({...prev,skills:data}))} />
                 )}  
               </div>
-              <button className='bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
+              <button onClick={()=> {toast.promise(saveResume,{loading: 'saving'})}}
+              className='bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
                 Save changes
               </button>
 
