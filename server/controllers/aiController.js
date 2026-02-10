@@ -4,8 +4,6 @@ import Resume from "../models/Resume.js";
 // controller for enabling a resume's professional summary
 //POST: /api/ai/enhance-pro-sum
 
-
-
 export const enhanceProfessionalSummary = async (req, res) => {
      try {
       const {userContent} = req.body;
@@ -77,7 +75,7 @@ export const uploadResume = async (req, res) => {
 
   try {
 
-    console.log("USER ID 👉", req.userId);
+   
     const { resumeText, title } = req.body;
     const userId = req.userId;
 
@@ -142,8 +140,6 @@ export const uploadResume = async (req, res) => {
     const extractedData = response.choices[0].message.content;
 
      const parsedData = JSON.parse(extractedData);
-      
-     console.error("JSON PARSE ERROR 👉", extractedData);
      
     const newResume = await Resume.create({
       userId,
@@ -154,7 +150,6 @@ export const uploadResume = async (req, res) => {
     res.json({ resumeId: newResume._id });
 
   } catch (error) {
-    console.log("BACKEND ERROR aicontroller 👉", error);
     res.status(500).json({ message: error.message });
   }
 };
