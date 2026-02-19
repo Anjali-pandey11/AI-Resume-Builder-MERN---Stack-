@@ -9,7 +9,6 @@ import {
   UploadCloud,
   LoaderCircleIcon,
 } from "lucide-react";
-import { dummyResumeData } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../configs/api";
@@ -84,7 +83,7 @@ const Dashboard = () => {
       setShowUploadResume(false);
        navigate(`/app/builder/${data.resumeId}`);
        
-      toast.success(data.message);
+      toast.success("Resume uploaded successfully!");
       
 
     } catch (error) {
