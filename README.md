@@ -1,6 +1,6 @@
 # 🤖 AI Resume Builder — MERN Stack
 
-An intelligent, full-stack resume builder powered by AI that helps users craft professional, tailored resumes with ease. Built with the **MERN** stack (MongoDB, Express.js, React, Node.js).
+A full-stack resume builder powered by AI that helps users craft professional, tailored resumes with ease. Built with the **MERN** stack (MongoDB, Express.js, React, Node.js).
 
 ---
 
@@ -180,11 +180,7 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
-
----
 
 ## 👩‍💻 Author
 
